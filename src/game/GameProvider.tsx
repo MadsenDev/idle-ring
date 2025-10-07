@@ -115,7 +115,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   stateRef.current = state;
 
-  const flushPersist = useCallback(() => {
+  const flushPersist = useCallback((forceLocal = false) => {
     if (idleHandleRef.current !== null && typeof window !== "undefined") {
       if (typeof (window as any).cancelIdleCallback === "function") {
         (window as any).cancelIdleCallback(idleHandleRef.current);
@@ -127,7 +127,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const now = Date.now();
     saveRef.current = now;
     const snapshot = { ...latestSnapshotRef.current, lastTs: now };
-    void saveGameState(snapshot);
+    void saveGameState(snapshot, { forceLocal });
   }, []);
 
   const schedulePersist = useCallback(() => {
@@ -224,18 +224,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const id = window.setInterval(persist, 3000);
     const handleVisibility = () => {
       if (document.visibilityState === "hidden") {
-        flushPersist();
+        flushPersist(true);
       }
     };
-    window.addEventListener("beforeunload", flushPersist);
-    window.addEventListener("pagehide", flushPersist);
+    const handleBeforeUnload = () => flushPersist(true);
+    const handlePageHide = () => flushPersist(true);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pagehide", handlePageHide);
     document.addEventListener("visibilitychange", handleVisibility);
     return () => {
-      window.removeEventListener("beforeunload", flushPersist);
-      window.removeEventListener("pagehide", flushPersist);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pagehide", handlePageHide);
       document.removeEventListener("visibilitychange", handleVisibility);
       clearInterval(id);
-      flushPersist();
+      flushPersist(true);
     };
   }, [persist, flushPersist]);
 
