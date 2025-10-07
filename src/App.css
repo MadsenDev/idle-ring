@@ -1,0 +1,55 @@
+:root {
+  --glow-primary: rgba(129, 140, 248, 0.35);
+  --glow-secondary: rgba(236, 72, 153, 0.28);
+}
+
+.cosmic-grid::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background-image: radial-gradient(rgba(129, 140, 248, 0.25) 1px, transparent 1px);
+  background-size: 120px 120px;
+  opacity: 0.35;
+  animation: grid-spin 60s linear infinite;
+}
+
+.cosmic-grid::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle at 20% 20%, rgba(236, 72, 153, 0.2), transparent 45%),
+    radial-gradient(circle at 80% 30%, rgba(59, 130, 246, 0.2), transparent 55%),
+    radial-gradient(circle at 50% 80%, rgba(56, 189, 248, 0.15), transparent 40%);
+  filter: blur(45px);
+  opacity: 0.65;
+}
+
+@keyframes grid-spin {
+  from { transform: rotate(0deg) scale(1); }
+  to { transform: rotate(360deg) scale(1.05); }
+}
+
+.card-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-glow::before {
+  content: "";
+  position: absolute;
+  inset: -100%;
+  background: conic-gradient(from 0deg, var(--glow-primary), transparent 45%, var(--glow-secondary), transparent 90%, var(--glow-primary));
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.card-glow:hover::before {
+  opacity: 0.45;
+  animation: glow-spin 8s linear infinite;
+}
+
+@keyframes glow-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
