@@ -36,10 +36,12 @@ type State = {
   autoBuyers: AutoBuyerState;
 };
 
+type BuyAmount = number | "max";
+
 type Action =
   | { type: "TICK"; dt: number }                       // dt in seconds
   | { type: "CLICK" }
-  | { type: "BUY"; id: string }
+  | { type: "BUY"; id: string; amount?: BuyAmount }
   | { type: "LOAD"; payload: State }
   | { type: "PRESTIGE" }
   | { type: "BUY_UPGRADE"; id: string }
@@ -259,12 +261,27 @@ function reducer(state: State, action: Action): State {
       if (!def) return state;
       if (def.id === "click") return state;
       const current = state.gens[def.id]?.count ?? 0;
-      const cost = nextCost(def, current);
-      if (state.energy < cost) return state;
+      const amount = action.amount ?? 1;
+      const limit = amount === "max" ? Number.POSITIVE_INFINITY : Math.max(1, Math.floor(amount));
+      let remainingEnergy = state.energy;
+      let nextCount = current;
+      let purchased = 0;
+
+      while (purchased < limit) {
+        if (amount === "max" && purchased >= 1_000_000) break;
+        const cost = nextCost(def, nextCount);
+        if (remainingEnergy < cost) break;
+        remainingEnergy -= cost;
+        nextCount += 1;
+        purchased += 1;
+      }
+
+      if (purchased === 0) return state;
+
       return {
         ...state,
-        energy: state.energy - cost,
-        gens: { ...state.gens, [def.id]: { count: current + 1 } },
+        energy: remainingEnergy,
+        gens: { ...state.gens, [def.id]: { count: nextCount } },
       };
     }
     case "PRESTIGE": {
