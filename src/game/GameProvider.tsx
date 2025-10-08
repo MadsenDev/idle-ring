@@ -343,6 +343,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const saveRef = useRef<number>(0);
   const pendingImmediateSave = useRef(false);
   const latestSnapshotRef = useRef<State>(initial);
+  const lastPersistedPayloadRef = useRef<string | null>(null);
   const idleHandleRef = useRef<number | null>(null);
   const [offlineGain, setOfflineGain] = useState(0);
   const effects = useMemo(
@@ -360,6 +361,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const canPrestige = state.totalEnergy >= PRESTIGE_REQ;
 
   stateRef.current = state;
+  latestSnapshotRef.current = state;
 
   const flushPersist = useCallback((forceLocal = false) => {
     if (idleHandleRef.current !== null && typeof window !== "undefined") {
@@ -371,9 +373,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       idleHandleRef.current = null;
     }
     const now = Date.now();
-    saveRef.current = now;
     const snapshot = { ...latestSnapshotRef.current, lastTs: now };
-    void saveGameState(snapshot, { forceLocal });
+    const payload = JSON.stringify(snapshot);
+    if (!forceLocal && payload === lastPersistedPayloadRef.current) {
+      saveRef.current = now;
+      return;
+    }
+    saveRef.current = now;
+    lastPersistedPayloadRef.current = payload;
+    void saveGameState(payload, { forceLocal });
   }, []);
 
   const schedulePersist = useCallback(() => {
@@ -413,7 +421,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [flushPersist, schedulePersist]);
 
   const dispatch = useCallback((action: Action) => {
-    if (action.type !== "TICK") {
+    if (action.type !== "TICK" && action.type !== "CLICK") {
       pendingImmediateSave.current = true;
     }
     baseDispatch(action);
