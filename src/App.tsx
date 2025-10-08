@@ -1,5 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import type { IconType } from "react-icons";
+import { FiCpu, FiFlag, FiGrid, FiStar, FiTrendingUp } from "react-icons/fi";
 import GeneratorList from "./components/GeneratorList";
 import AutomationPanel from "./components/AutomationPanel";
 import MilestonesPanel from "./components/MilestonesPanel";
@@ -43,6 +45,14 @@ const sectionOrder = [
 ] as const;
 
 type SectionId = (typeof sectionOrder)[number]["id"];
+
+const sectionIcons: Record<SectionId, IconType> = {
+  constructs: FiGrid,
+  upgrades: FiTrendingUp,
+  milestones: FiFlag,
+  automation: FiCpu,
+  prestige: FiStar,
+};
 
 export default function App() {
   const [activeSection, setActiveSection] = useState<SectionId>("constructs");
@@ -187,21 +197,30 @@ export default function App() {
         <nav className="sm:hidden">
           <div className="fixed bottom-4 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-4">
             <div className="flex items-stretch justify-between gap-1 rounded-3xl border border-indigo-500/40 bg-slate-950/80 px-2 py-2 shadow-2xl shadow-indigo-900/40 backdrop-blur-xl">
-              {sectionOrder.map((section) => (
-                <button
-                  key={section.id}
-                  type="button"
-                  onClick={() => setActiveSection(section.id)}
-                  className={`flex flex-1 flex-col items-center justify-center rounded-2xl px-2 py-1.5 text-[11px] font-semibold uppercase tracking-[0.3em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400 ${
-                    activeSection === section.id
-                      ? "bg-indigo-500/25 text-indigo-100 shadow-inner shadow-indigo-500/20"
-                      : "text-slate-300/70 hover:text-slate-100"
-                  }`}
-                  aria-pressed={activeSection === section.id}
-                >
-                  {section.label}
-                </button>
-              ))}
+              {sectionOrder.map((section) => {
+                const Icon = sectionIcons[section.id];
+                return (
+                  <button
+                    key={section.id}
+                    type="button"
+                    onClick={() => setActiveSection(section.id)}
+                    className={`flex flex-1 flex-col items-center justify-center rounded-2xl px-2 py-1.5 text-[11px] font-semibold uppercase tracking-[0.3em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400 ${
+                      activeSection === section.id
+                        ? "bg-indigo-500/25 text-indigo-100 shadow-inner shadow-indigo-500/20"
+                        : "text-slate-300/70 hover:text-slate-100"
+                    }`}
+                    aria-pressed={activeSection === section.id}
+                  >
+                    <Icon
+                      aria-hidden
+                      className={`text-lg ${
+                        activeSection === section.id ? "text-indigo-100" : "text-slate-300/80"
+                      }`}
+                    />
+                    <span className="sr-only">{section.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </nav>
