@@ -38,7 +38,7 @@ export default function MilestonesPanel() {
           >
             <div>
               <div className="font-semibold text-fuchsia-100">{milestone.name}</div>
-              <div className="text-[11px] uppercase tracking-[0.3em] text-fuchsia-200/70">Goal: {format(milestone.threshold)} total energy</div>
+              <div className="text-[11px] uppercase tracking-[0.3em] text-fuchsia-200/70">Goal: {format(milestone.threshold)} total insight</div>
               <div className="mt-2 text-sm text-fuchsia-100/90">{milestone.description}</div>
               <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-white/10">
                 <motion.div

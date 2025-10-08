@@ -16,8 +16,8 @@ export default function PrestigePanel() {
     >
       <div className="font-semibold mb-1 uppercase tracking-[0.35em] text-amber-200">Prestige</div>
       <div className="text-sm text-amber-100/90 mb-4">
-        Reset everything to gain Prestige points (+10% production each).<br/>
-        Requires {format(PRESTIGE_REQ)} total energy. You’ll get: <b>{willGet}</b>
+        Reset everything to gain Prestige points (+10% insight production each).<br/>
+        Requires {format(PRESTIGE_REQ)} total insight. You’ll get: <b>{willGet}</b>
       </div>
       <div className="flex flex-wrap items-center gap-4">
         <motion.button

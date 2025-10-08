@@ -53,7 +53,7 @@ export default function OfflineGainModal() {
           >
             <h2 className="text-xl font-semibold text-indigo-600 dark:text-indigo-300">Welcome back!</h2>
             <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
-              While you were away your generators produced <b>{format(offlineGain)}</b> energy.
+              While you were away your constructs produced <b>{format(offlineGain)}</b> insight.
             </p>
             <motion.button
               onClick={close}

@@ -18,11 +18,11 @@ function HUD() {
       animate={{ opacity: 1, y: 0 }}
     >
       <div className="rounded-xl bg-slate-900/60 px-4 py-3 font-semibold shadow-lg shadow-indigo-500/20">
-        <div className="text-[11px] uppercase tracking-[0.3em] text-indigo-200/70">Energy</div>
+        <div className="text-[11px] uppercase tracking-[0.3em] text-indigo-200/70">Insight</div>
         <div className="text-lg text-indigo-200">{format(state.energy)}</div>
       </div>
       <div className="rounded-xl bg-slate-900/60 px-4 py-3 font-semibold shadow-lg shadow-indigo-500/20">
-        <div className="text-[11px] uppercase tracking-[0.3em] text-sky-200/70">Total</div>
+        <div className="text-[11px] uppercase tracking-[0.3em] text-sky-200/70">Total Insight</div>
         <div className="text-lg text-sky-200">{format(state.totalEnergy)}</div>
       </div>
       <div className="rounded-xl bg-slate-900/60 px-4 py-3 font-semibold shadow-lg shadow-indigo-500/20">
@@ -55,7 +55,7 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.5, ease: "easeOut" }}
             >
-              Harness the loop • Ascend the ring
+              Balance the proofs • Ascend the ring
             </motion.p>
             <OfflineGainToast />
           </header>
@@ -78,7 +78,7 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease: "easeOut", delay: 0.05 }}
           >
-            <h2 className="font-semibold uppercase tracking-wider text-sky-200">Generators</h2>
+            <h2 className="font-semibold uppercase tracking-wider text-sky-200">Constructs</h2>
             <div className="mt-4">
               <GeneratorList />
             </div>

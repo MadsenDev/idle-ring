@@ -62,7 +62,7 @@ export default function Ring() {
       >
         <div className="text-center">
           <div className="text-3xl font-bold text-indigo-100 drop-shadow-lg">{format(state.energy)}</div>
-          <div className="text-xs uppercase tracking-[0.3em] text-indigo-200/70">Energy</div>
+          <div className="text-xs uppercase tracking-[0.3em] text-indigo-200/70">Insight</div>
         </div>
         <motion.div
           className="absolute -inset-2 rounded-full ring-2 ring-indigo-400/40"
@@ -89,7 +89,7 @@ export default function Ring() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        +{formattedRate}/s • Tap +{formattedClick}
+        +{formattedRate}/s • Solve +{formattedClick}
       </motion.div>
     </div>
   );

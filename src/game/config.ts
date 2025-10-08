@@ -3,8 +3,8 @@ export type GeneratorDef = {
   name: string;
   baseCost: number;
   costMult: number; // cost increase per purchase
-  baseRate: number; // energy/sec per unit
-  unlockAt?: number; // energy needed to show
+  baseRate: number; // insight/sec per unit
+  unlockAt?: number; // insight needed to show
 };
 
 export type EffectMultiplierTarget = "click" | "all" | string;
@@ -48,57 +48,57 @@ export type MilestoneDef = {
 };
 
 export const GENERATORS: GeneratorDef[] = [
-  { id: "click", name: "Manual Tap", baseCost: 0, costMult: 1, baseRate: 0, unlockAt: 0 }, // special: click-only
-  { id: "spark", name: "Spark", baseCost: 10, costMult: 1.15, baseRate: 0.1, unlockAt: 0 },
-  { id: "coil", name: "Coil", baseCost: 120, costMult: 1.16, baseRate: 1.25, unlockAt: 50 },
-  { id: "reactor", name: "Reactor", baseCost: 1_800, costMult: 1.18, baseRate: 12, unlockAt: 450 },
-  { id: "forge", name: "Forge", baseCost: 12_000, costMult: 1.2, baseRate: 65, unlockAt: 3_000 },
-  { id: "singularity", name: "Singularity", baseCost: 150_000, costMult: 1.22, baseRate: 380, unlockAt: 20_000 },
-  { id: "quantum", name: "Quantum Core", baseCost: 2_000_000, costMult: 1.24, baseRate: 2_400, unlockAt: 150_000 },
-  { id: "nebula", name: "Nebula Loom", baseCost: 25_000_000, costMult: 1.26, baseRate: 15_000, unlockAt: 1_000_000 },
-  { id: "ascension", name: "Ascension Gate", baseCost: 350_000_000, costMult: 1.28, baseRate: 110_000, unlockAt: 8_000_000 },
-  { id: "orbital", name: "Orbital Assembly", baseCost: 5_000_000_000, costMult: 1.3, baseRate: 800_000, unlockAt: 120_000_000 },
-  { id: "void", name: "Void Beacon", baseCost: 80_000_000_000, costMult: 1.32, baseRate: 5_800_000, unlockAt: 1_200_000_000 },
-  { id: "rift", name: "Rift Engine", baseCost: 1_200_000_000_000, costMult: 1.34, baseRate: 42_000_000, unlockAt: 20_000_000_000 },
-  { id: "aether", name: "Aether Spire", baseCost: 18_000_000_000_000, costMult: 1.36, baseRate: 320_000_000, unlockAt: 350_000_000_000 },
-  { id: "nova", name: "Nova Crucible", baseCost: 270_000_000_000_000, costMult: 1.38, baseRate: 2_500_000_000, unlockAt: 5_000_000_000_000 },
-  { id: "cosmic", name: "Cosmic Observatory", baseCost: 4_000_000_000_000_000, costMult: 1.4, baseRate: 19_000_000_000, unlockAt: 80_000_000_000_000 },
-  { id: "eternity", name: "Eternity Anchor", baseCost: 60_000_000_000_000_000, costMult: 1.42, baseRate: 150_000_000_000, unlockAt: 1_200_000_000_000_000 },
+  { id: "click", name: "Manual Solve", baseCost: 0, costMult: 1, baseRate: 0, unlockAt: 0 }, // special: click-only
+  { id: "spark", name: "Counting Bead", baseCost: 10, costMult: 1.15, baseRate: 0.1, unlockAt: 0 },
+  { id: "coil", name: "Abacus Row", baseCost: 120, costMult: 1.16, baseRate: 1.25, unlockAt: 50 },
+  { id: "reactor", name: "Equation Engine", baseCost: 1_800, costMult: 1.18, baseRate: 12, unlockAt: 450 },
+  { id: "forge", name: "Proof Forge", baseCost: 12_000, costMult: 1.2, baseRate: 65, unlockAt: 3_000 },
+  { id: "singularity", name: "Logic Nexus", baseCost: 150_000, costMult: 1.22, baseRate: 380, unlockAt: 20_000 },
+  { id: "quantum", name: "Tensor Core", baseCost: 2_000_000, costMult: 1.24, baseRate: 2_400, unlockAt: 150_000 },
+  { id: "nebula", name: "Fractal Loom", baseCost: 25_000_000, costMult: 1.26, baseRate: 15_000, unlockAt: 1_000_000 },
+  { id: "ascension", name: "Theorem Gate", baseCost: 350_000_000, costMult: 1.28, baseRate: 110_000, unlockAt: 8_000_000 },
+  { id: "orbital", name: "Lemma Assembly", baseCost: 5_000_000_000, costMult: 1.3, baseRate: 800_000, unlockAt: 120_000_000 },
+  { id: "void", name: "Concept Beacon", baseCost: 80_000_000_000, costMult: 1.32, baseRate: 5_800_000, unlockAt: 1_200_000_000 },
+  { id: "rift", name: "Topology Engine", baseCost: 1_200_000_000_000, costMult: 1.34, baseRate: 42_000_000, unlockAt: 20_000_000_000 },
+  { id: "aether", name: "Calculus Spire", baseCost: 18_000_000_000_000, costMult: 1.36, baseRate: 320_000_000, unlockAt: 350_000_000_000 },
+  { id: "nova", name: "Algorithm Crucible", baseCost: 270_000_000_000_000, costMult: 1.38, baseRate: 2_500_000_000, unlockAt: 5_000_000_000_000 },
+  { id: "cosmic", name: "Research Observatory", baseCost: 4_000_000_000_000_000, costMult: 1.4, baseRate: 19_000_000_000, unlockAt: 80_000_000_000_000 },
+  { id: "eternity", name: "Convergence Anchor", baseCost: 60_000_000_000_000_000, costMult: 1.42, baseRate: 150_000_000_000, unlockAt: 1_200_000_000_000_000 },
   { id: "infinity", name: "Infinity Prism", baseCost: 900_000_000_000_000_000, costMult: 1.44, baseRate: 1_200_000_000_000, unlockAt: 18_000_000_000_000_000 },
-  { id: "paradox", name: "Paradox Engine", baseCost: 14_000_000_000_000_000_000, costMult: 1.46, baseRate: 9_500_000_000_000, unlockAt: 280_000_000_000_000_000 },
-  { id: "omega", name: "Omega Vault", baseCost: 2_500_000_000_000_000_000_000, costMult: 1.48, baseRate: 75_000_000_000_000, unlockAt: 4_500_000_000_000_000_000 },
-  { id: "dc", name: "Decillion Throne", baseCost: 3e33, costMult: 1.5, baseRate: 650_000_000_000_000, unlockAt: 7e30 },
+  { id: "paradox", name: "Paradox Resolver", baseCost: 14_000_000_000_000_000_000, costMult: 1.46, baseRate: 9_500_000_000_000, unlockAt: 280_000_000_000_000_000 },
+  { id: "omega", name: "Omega Archive", baseCost: 2_500_000_000_000_000_000_000, costMult: 1.48, baseRate: 75_000_000_000_000, unlockAt: 4_500_000_000_000_000_000 },
+  { id: "dc", name: "Decillion Lectern", baseCost: 3e33, costMult: 1.5, baseRate: 650_000_000_000_000, unlockAt: 7e30 },
 ];
 
 export const UPGRADES: UpgradeDef[] = [
   {
     id: "focused-tap",
-    name: "Focused Tap",
-    description: "Double the energy gained from manual tapping. Persists through prestige.",
+    name: "Focused Study",
+    description: "Double the insight gained from manual solving. Persists through prestige.",
     cost: 100,
     unlockAt: 50,
     effects: [{ kind: "multiplier", target: "click", value: 2 }],
   },
   {
     id: "resonant-sparks",
-    name: "Resonant Sparks",
-    description: "Sparks generate twice as much energy.",
+    name: "Rhythmic Counting",
+    description: "Counting Beads generate twice as much insight.",
     cost: 400,
     unlockAt: 250,
     effects: [{ kind: "multiplier", target: "spark", value: 2 }],
   },
   {
     id: "overclocked-grid",
-    name: "Overclocked Grid",
-    description: "Boost all generators by 50%.",
+    name: "Structured Syllabus",
+    description: "Boost all constructs by 50%.",
     cost: 2_500,
     unlockAt: 1_500,
     effects: [{ kind: "multiplier", target: "all", value: 1.5 }],
   },
   {
     id: "quantum-supervisor",
-    name: "Quantum Supervisor",
-    description: "Unlock an auto-buyer that purchases Sparks every few seconds.",
+    name: "Bead Instructor",
+    description: "Unlock an auto-buyer that purchases Counting Beads every few seconds.",
     cost: 12_000,
     unlockAt: 8_000,
     effects: [
@@ -106,24 +106,24 @@ export const UPGRADES: UpgradeDef[] = [
         kind: "autoBuyer",
         target: "spark",
         interval: 4,
-        label: "Spark Overseer",
-        description: "Automatically buys a Spark every 4s if affordable.",
+        label: "Bead Instructor",
+        description: "Automatically buys a Counting Bead every 4s if affordable.",
       },
       { kind: "multiplier", target: "spark", value: 1.25 },
     ],
   },
   {
     id: "stellar-circuitry",
-    name: "Stellar Circuitry",
-    description: "Manual tapping feeds the grid, adding +1 virtual prestige point to production.",
+    name: "Lemma Warm-Up",
+    description: "Manual solving feeds your intuition, adding +1 virtual prestige point to production.",
     cost: 30_000,
     unlockAt: 20_000,
     effects: [{ kind: "prestigeBoost", value: 1 }],
   },
   {
     id: "orbital-synthesis",
-    name: "Orbital Synthesis",
-    description: "Strengthen Ascension Gates and Orbital Assemblies by 75%.",
+    name: "Coordinated Arguments",
+    description: "Strengthen Theorem Gates and Lemma Assemblies by 75%.",
     cost: 250_000_000,
     unlockAt: 120_000_000,
     effects: [
@@ -133,8 +133,8 @@ export const UPGRADES: UpgradeDef[] = [
   },
   {
     id: "void-harmonics",
-    name: "Void Harmonics",
-    description: "Void Beacons and Rift Engines operate twice as efficiently.",
+    name: "Concept Resonance",
+    description: "Concept Beacons and Topology Engines operate twice as efficiently.",
     cost: 3_500_000_000,
     unlockAt: 1_500_000_000,
     effects: [
@@ -144,8 +144,8 @@ export const UPGRADES: UpgradeDef[] = [
   },
   {
     id: "chrono-accumulator",
-    name: "Chrono Accumulator",
-    description: "Amplify all generation by 150% and gain +3 virtual prestige.",
+    name: "Timeless Insight",
+    description: "Amplify all research by 150% and gain +3 virtual prestige.",
     cost: 90_000_000_000,
     unlockAt: 20_000_000_000,
     effects: [
@@ -155,8 +155,8 @@ export const UPGRADES: UpgradeDef[] = [
   },
   {
     id: "aether-refineries",
-    name: "Aether Refineries",
-    description: "Refine Aether Spires and Nova Crucibles for 2.5x output.",
+    name: "Calculus Workshops",
+    description: "Refine Calculus Spires and Algorithm Crucibles for 2.5x output.",
     cost: 1_800_000_000_000,
     unlockAt: 300_000_000_000,
     effects: [
@@ -166,8 +166,8 @@ export const UPGRADES: UpgradeDef[] = [
   },
   {
     id: "cosmic-overmind",
-    name: "Cosmic Overmind",
-    description: "Late cosmic structures output three times as much energy.",
+    name: "Endless Hypotheses",
+    description: "Late scholarly structures output three times as much insight.",
     cost: 28_000_000_000_000,
     unlockAt: 6_500_000_000_000,
     effects: [
@@ -178,8 +178,8 @@ export const UPGRADES: UpgradeDef[] = [
   },
   {
     id: "timeline-dilation",
-    name: "Timeline Dilation",
-    description: "Warp reality, tripling all output and granting +10 virtual prestige points.",
+    name: "Parallel Proofs",
+    description: "Work across timelines, tripling all output and granting +10 virtual prestige points.",
     cost: 420_000_000_000_000,
     unlockAt: 110_000_000_000_000,
     effects: [
@@ -189,8 +189,8 @@ export const UPGRADES: UpgradeDef[] = [
   },
   {
     id: "omni-singularity",
-    name: "Omniversal Singularity",
-    description: "Double the power of Paradox Engines, Omega Vaults, and the Decillion Throne.",
+    name: "Grand Unification",
+    description: "Double the power of Paradox Resolvers, Omega Archives, and the Decillion Lectern.",
     cost: 15_000_000_000_000_000,
     unlockAt: 2_500_000_000_000_000,
     effects: [
@@ -204,37 +204,37 @@ export const UPGRADES: UpgradeDef[] = [
 export const MILESTONES: MilestoneDef[] = [
   {
     id: "milestone-first-loop",
-    name: "First Resonance",
-    description: "Reach 500 total energy to harden the ring, granting +25% generator output.",
+    name: "First Breakthrough",
+    description: "Reach 500 total insight to reinforce the ring, granting +25% generator output.",
     threshold: 500,
     effects: [{ kind: "multiplier", target: "all", value: 1.25 }],
   },
   {
     id: "milestone-shimmer",
-    name: "Shimmer of Infinity",
-    description: "Accumulate 5,000 total energy to empower prestige by +1.",
+    name: "Emergent Proof",
+    description: "Accumulate 5,000 total insight to empower prestige by +1.",
     threshold: 5_000,
     effects: [{ kind: "prestigeBoost", value: 1 }],
   },
   {
     id: "milestone-automation",
-    name: "Automation Protocol",
-    description: "Hit 25,000 total energy to unlock an auto-buyer for Coils.",
+    name: "Automation Theorem",
+    description: "Hit 25,000 total insight to unlock an auto-buyer for Abacus Rows.",
     threshold: 25_000,
     effects: [
       {
         kind: "autoBuyer",
         target: "coil",
         interval: 6,
-        label: "Coil Steward",
-        description: "Automatically buys a Coil every 6s if affordable.",
+        label: "Row Steward",
+        description: "Automatically buys an Abacus Row every 6s if affordable.",
       },
     ],
   },
   {
     id: "milestone-stellar-forge",
-    name: "Stellar Forge",
-    description: "Forge 150,000 total energy to supercharge late-game structures by 40%.",
+    name: "Proof Refinery",
+    description: "Forge 150,000 total insight to supercharge Equation Engines, Proof Forges, Logic Nexuses, and Tensor Cores by 40%.",
     threshold: 150_000,
     effects: [
       { kind: "multiplier", target: "reactor", value: 1.4 },
@@ -245,46 +245,46 @@ export const MILESTONES: MilestoneDef[] = [
   },
   {
     id: "milestone-constellation",
-    name: "Constellation Architects",
-    description: "Harness 1,000,000 total energy to unlock a Nebula Loom auto-buyer and +50% tap power.",
+    name: "Fractal Architects",
+    description: "Harness 1,000,000 total insight to unlock a Fractal Loom auto-buyer and +50% manual solve power.",
     threshold: 1_000_000,
     effects: [
       {
         kind: "autoBuyer",
         target: "nebula",
         interval: 12,
-        label: "Nebula Caretaker",
-        description: "Automatically buys a Nebula Loom every 12s if affordable.",
+        label: "Loom Curator",
+        description: "Automatically buys a Fractal Loom every 12s if affordable.",
       },
       { kind: "multiplier", target: "click", value: 1.5 },
     ],
   },
   {
     id: "milestone-orbital-array",
-    name: "Orbital Array",
-    description: "Amass 10,000,000 total energy to empower Ascension Gates by 60%.",
+    name: "Lemma Array",
+    description: "Amass 10,000,000 total insight to empower Theorem Gates by 60%.",
     threshold: 10_000_000,
     effects: [{ kind: "multiplier", target: "ascension", value: 1.6 }],
   },
   {
     id: "milestone-voidbound",
-    name: "Voidbound Custodians",
-    description: "Reach 150,000,000 total energy to unlock automation for Orbital Assemblies.",
+    name: "Concept Custodians",
+    description: "Reach 150,000,000 total insight to unlock automation for Lemma Assemblies.",
     threshold: 150_000_000,
     effects: [
       {
         kind: "autoBuyer",
         target: "orbital",
         interval: 14,
-        label: "Orbital Custodian",
-        description: "Automatically buys an Orbital Assembly every 14s if affordable.",
+        label: "Assembly Custodian",
+        description: "Automatically buys a Lemma Assembly every 14s if affordable.",
       },
     ],
   },
   {
     id: "milestone-rift-protocol",
-    name: "Rift Protocol",
-    description: "Accumulate 2,500,000,000 total energy to double Void Beacons and automate Rift Engines.",
+    name: "Topology Protocol",
+    description: "Accumulate 2,500,000,000 total insight to double Concept Beacons and automate Topology Engines.",
     threshold: 2_500_000_000,
     effects: [
       { kind: "multiplier", target: "void", value: 2 },
@@ -292,22 +292,22 @@ export const MILESTONES: MilestoneDef[] = [
         kind: "autoBuyer",
         target: "void",
         interval: 18,
-        label: "Void Pathfinder",
-        description: "Automatically buys a Void Beacon every 18s if affordable.",
+        label: "Beacon Pathfinder",
+        description: "Automatically buys a Concept Beacon every 18s if affordable.",
       },
       {
         kind: "autoBuyer",
         target: "rift",
         interval: 20,
-        label: "Rift Artificer",
-        description: "Automatically buys a Rift Engine every 20s if affordable.",
+        label: "Topology Artificer",
+        description: "Automatically buys a Topology Engine every 20s if affordable.",
       },
     ],
   },
   {
     id: "milestone-aether-sea",
-    name: "Aetheric Sea",
-    description: "Harness 60,000,000,000 total energy to triple Aether Spires and automate their purchase.",
+    name: "Calculus Tide",
+    description: "Harness 60,000,000,000 total insight to triple Calculus Spires and automate their purchase.",
     threshold: 60_000_000_000,
     effects: [
       { kind: "multiplier", target: "aether", value: 3 },
@@ -315,15 +315,15 @@ export const MILESTONES: MilestoneDef[] = [
         kind: "autoBuyer",
         target: "aether",
         interval: 18,
-        label: "Aether Navigator",
-        description: "Automatically buys an Aether Spire every 18s if affordable.",
+        label: "Calculus Navigator",
+        description: "Automatically buys a Calculus Spire every 18s if affordable.",
       },
     ],
   },
   {
     id: "milestone-cosmic-symphony",
-    name: "Cosmic Symphony",
-    description: "Absorb 1,500,000,000,000 total energy to double Nova Crucibles and unlock automation for them.",
+    name: "Algorithm Symphony",
+    description: "Absorb 1,500,000,000,000 total insight to double Algorithm Crucibles and unlock automation for them.",
     threshold: 1_500_000_000_000,
     effects: [
       { kind: "multiplier", target: "nova", value: 2 },
@@ -331,15 +331,15 @@ export const MILESTONES: MilestoneDef[] = [
         kind: "autoBuyer",
         target: "nova",
         interval: 22,
-        label: "Nova Maestro",
-        description: "Automatically buys a Nova Crucible every 22s if affordable.",
+        label: "Algorithm Maestro",
+        description: "Automatically buys an Algorithm Crucible every 22s if affordable.",
       },
     ],
   },
   {
     id: "milestone-eternal-echo",
-    name: "Eternal Echo",
-    description: "Collect 40,000,000,000,000 total energy to grant +8 virtual prestige and automate Cosmic Observatories.",
+    name: "Eternal Proof",
+    description: "Collect 40,000,000,000,000 total insight to grant +8 virtual prestige and automate Research Observatories.",
     threshold: 40_000_000_000_000,
     effects: [
       { kind: "prestigeBoost", value: 8 },
@@ -347,15 +347,15 @@ export const MILESTONES: MilestoneDef[] = [
         kind: "autoBuyer",
         target: "cosmic",
         interval: 24,
-        label: "Cosmic Conductor",
-        description: "Automatically buys a Cosmic Observatory every 24s if affordable.",
+        label: "Research Conductor",
+        description: "Automatically buys a Research Observatory every 24s if affordable.",
       },
     ],
   },
   {
     id: "milestone-infinite-parade",
-    name: "Infinite Parade",
-    description: "Amass 1,200,000,000,000,000 total energy to triple Eternity Anchors and unlock Infinity Prism automation.",
+    name: "Infinite Procession",
+    description: "Amass 1,200,000,000,000,000 total insight to triple Convergence Anchors and unlock Infinity Prism automation.",
     threshold: 1_200_000_000_000_000,
     effects: [
       { kind: "multiplier", target: "eternity", value: 3 },
@@ -363,15 +363,15 @@ export const MILESTONES: MilestoneDef[] = [
         kind: "autoBuyer",
         target: "infinity",
         interval: 26,
-        label: "Infinity Courier",
+        label: "Prism Courier",
         description: "Automatically buys an Infinity Prism every 26s if affordable.",
       },
     ],
   },
   {
     id: "milestone-omega-parade",
-    name: "Omega Procession",
-    description: "Bank 30,000,000,000,000,000 total energy to gain +15 prestige and automate Paradox Engines.",
+    name: "Omega Symposium",
+    description: "Bank 30,000,000,000,000,000 total insight to gain +15 prestige and automate Paradox Resolvers.",
     threshold: 30_000_000_000_000_000,
     effects: [
       { kind: "prestigeBoost", value: 15 },
@@ -379,15 +379,15 @@ export const MILESTONES: MilestoneDef[] = [
         kind: "autoBuyer",
         target: "paradox",
         interval: 30,
-        label: "Paradox Marshal",
-        description: "Automatically buys a Paradox Engine every 30s if affordable.",
+        label: "Resolver Marshal",
+        description: "Automatically buys a Paradox Resolver every 30s if affordable.",
       },
     ],
   },
   {
     id: "milestone-decillion-awakening",
-    name: "Decillion Awakening",
-    description: "Stabilize 3e27 total energy to empower Omega Vaults and the Decillion Throne while unlocking their automation.",
+    name: "Decillion Enlightenment",
+    description: "Stabilize 3e27 total insight to empower Omega Archives and the Decillion Lectern while unlocking their automation.",
     threshold: 3e27,
     effects: [
       { kind: "multiplier", target: "omega", value: 3 },
@@ -396,23 +396,23 @@ export const MILESTONES: MilestoneDef[] = [
         kind: "autoBuyer",
         target: "omega",
         interval: 34,
-        label: "Omega Seneschal",
-        description: "Automatically buys an Omega Vault every 34s if affordable.",
+        label: "Archive Seneschal",
+        description: "Automatically buys an Omega Archive every 34s if affordable.",
       },
       {
         kind: "autoBuyer",
         target: "dc",
         interval: 40,
-        label: "Decillion Regent",
-        description: "Automatically buys a Decillion Throne every 40s if affordable.",
+        label: "Lectern Regent",
+        description: "Automatically buys a Decillion Lectern every 40s if affordable.",
       },
       { kind: "prestigeBoost", value: 25 },
     ],
   },
 ];
 
-export const CLICK_BASE_GAIN = 1; // energy per click
-export const PRESTIGE_REQ = 100_000; // min energy for prestige
+export const CLICK_BASE_GAIN = 1; // insight per click
+export const PRESTIGE_REQ = 100_000; // min insight for prestige
 export const PRESTIGE_CONVERT = (energy: number) => Math.floor(Math.sqrt(energy / 1000));
 export const SAVE_KEY = "idle-ring-save-v1";
 
