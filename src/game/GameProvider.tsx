@@ -1,246 +1,66 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import {
   AUTO_BUYER_CONFIG,
-  CLICK_BASE_GAIN,
-  GENERATORS,
   MILESTONES,
   PRESTIGE_CONVERT,
   PRESTIGE_REQ,
   UPGRADES,
 } from "./config";
-import type { GeneratorDef, Effect } from "./config";
 import { loadGameState, loadGameStateSync, saveGameState } from "../utils/persist";
-
-type GenState = Record<string, { count: number }>;
-type UpgradeState = Record<string, boolean>;
-type MilestoneState = Record<string, boolean>;
-type AutoBuyerState = Record<string, { enabled: boolean; interval: number; timer: number }>;
-
-type EffectSummary = {
-  clickMultiplier: number;
-  globalGeneratorMultiplier: number;
-  generatorMultipliers: Record<string, number>;
-  prestigeBonus: number;
-};
+import {
+  applyUnlockEffects,
+  ensureAutoBuyersForState,
+  processAutoBuyers,
+  resetAutoBuyerTimers,
+} from "./autoBuyers";
+import {
+  calculateClickGain,
+  calculatePrestigeMultiplier,
+  calculateRate,
+  getGeneratorDef,
+  nextCost,
+} from "./economy";
+import { getEffectSummary } from "./effects";
+import {
+  createInitialState,
+  makeDefaultGenState,
+  makeDefaultMilestoneState,
+  makeDefaultUpgradeState,
+} from "./types";
+import type { AutoBuyerState, BaseState, EffectSummary } from "./types";
 
 const MIN_AUTOSAVE_INTERVAL = 12_000;
 
-type State = {
-  energy: number;
-  totalEnergy: number;
-  gens: GenState;
-  prestige: number;     // prestige points
-  lastTs: number;       // ms for offline calc
-  upgrades: UpgradeState;
-  milestones: MilestoneState;
-  autoBuyers: AutoBuyerState;
-};
+type State = BaseState;
 
 type BuyAmount = number | "max";
 
 type Action =
-  | { type: "TICK"; dt: number }                       // dt in seconds
+  | { type: "TICK"; dt: number }
   | { type: "CLICK" }
   | { type: "BUY"; id: string; amount?: BuyAmount }
   | { type: "LOAD"; payload: State }
   | { type: "PRESTIGE" }
   | { type: "BUY_UPGRADE"; id: string }
   | { type: "CLAIM_MILESTONE"; id: string }
-  | { type: "TOGGLE_AUTOBUYER"; id: string; enabled: boolean }
-  ;
+  | { type: "TOGGLE_AUTOBUYER"; id: string; enabled: boolean };
 
-const makeDefaultGenState = () => Object.fromEntries(GENERATORS.map(g => [g.id, { count: 0 }]));
-const makeDefaultUpgradeState = () => Object.fromEntries(UPGRADES.map(up => [up.id, false]));
-const makeDefaultMilestoneState = () => Object.fromEntries(MILESTONES.map(m => [m.id, false]));
+const initial: State = createInitialState();
 
-const initial: State = {
-  energy: 0,
-  totalEnergy: 0,
-  gens: makeDefaultGenState(),
-  prestige: 0,
-  lastTs: Date.now(),
-  upgrades: makeDefaultUpgradeState(),
-  milestones: makeDefaultMilestoneState(),
-  autoBuyers: {},
-};
-
-const summarizeEffects = (flags: { upgrades: UpgradeState; milestones: MilestoneState }): EffectSummary => {
-  const summary: EffectSummary = {
-    clickMultiplier: 1,
-    globalGeneratorMultiplier: 1,
-    generatorMultipliers: {},
-    prestigeBonus: 0,
-  };
-
-  const collectEffects = (): Effect[] => {
-    const effects: Effect[] = [];
-    for (const up of UPGRADES) {
-      if (flags.upgrades[up.id]) {
-        effects.push(...up.effects);
-      }
-    }
-    for (const milestone of MILESTONES) {
-      if (flags.milestones[milestone.id]) {
-        effects.push(...milestone.effects);
-      }
-    }
-    return effects;
-  };
-
-  for (const effect of collectEffects()) {
-    if (effect.kind === "multiplier") {
-      if (effect.target === "click") {
-        summary.clickMultiplier *= effect.value;
-      } else if (effect.target === "all") {
-        summary.globalGeneratorMultiplier *= effect.value;
-      } else {
-        summary.generatorMultipliers[effect.target] = (summary.generatorMultipliers[effect.target] ?? 1) * effect.value;
-      }
-    } else if (effect.kind === "prestigeBoost") {
-      summary.prestigeBonus += effect.value;
-    }
-  }
-
-  return summary;
-};
-
-const rateOf = (state: State, effects: EffectSummary) => {
-  const prestigeMult = 1 + (state.prestige + effects.prestigeBonus) * 0.1;
-  return GENERATORS.reduce((sum, g) => {
-    if (g.id === "click") return sum;
-    const c = state.gens[g.id]?.count ?? 0;
-    const mult = effects.globalGeneratorMultiplier * (effects.generatorMultipliers[g.id] ?? 1);
-    return sum + c * g.baseRate * mult * prestigeMult;
-  }, 0);
-};
-
-const nextCost = (def: GeneratorDef, count: number) =>
-  Math.ceil(def.baseCost * Math.pow(def.costMult, count));
-
-const applyUnlockEffects = (state: State, effects: Effect[]): State => {
-  let autoBuyers = state.autoBuyers;
-  let changed = false;
-  for (const effect of effects) {
-    if (effect.kind === "autoBuyer") {
-      const existing = autoBuyers[effect.target];
-      const nextEntry = {
-        enabled: existing?.enabled ?? false,
-        timer: existing?.enabled ? existing.timer : 0,
-        interval: effect.interval,
-      };
-      if (!existing || existing.interval !== effect.interval || existing.timer !== nextEntry.timer) {
-        if (!changed) {
-          autoBuyers = { ...autoBuyers };
-          changed = true;
-        }
-        autoBuyers[effect.target] = nextEntry;
-      }
-    }
-  }
-  if (!changed) return state;
-  return { ...state, autoBuyers };
-};
-
-const ensureAutoBuyersForState = (state: State): State => {
-  let current = state;
-  for (const up of UPGRADES) {
-    if (current.upgrades[up.id]) {
-      current = applyUnlockEffects(current, up.effects);
-    }
-  }
-  for (const milestone of MILESTONES) {
-    if (current.milestones[milestone.id]) {
-      current = applyUnlockEffects(current, milestone.effects);
-    }
-  }
-  return current;
-};
-
-const resetAutoBuyerTimers = (autoBuyers: AutoBuyerState): AutoBuyerState => {
-  const entries = Object.entries(autoBuyers);
-  if (entries.length === 0) return autoBuyers;
-  const next: AutoBuyerState = {};
-  for (const [id, entry] of entries) {
-    next[id] = { ...entry, timer: 0 };
-  }
-  return next;
-};
-
-const processAutoBuyers = (state: State, energy: number, dt: number) => {
-  if (Object.keys(state.autoBuyers).length === 0) {
-    return { energy, gens: state.gens, autoBuyers: state.autoBuyers };
-  }
-
-  let currentEnergy = energy;
-  let gens = state.gens;
-  let autoBuyers: AutoBuyerState = state.autoBuyers;
-  let autoMutated = false;
-  let gensMutated = false;
-
-  for (const [id, entry] of Object.entries(state.autoBuyers)) {
-    if (!entry) continue;
-    if (!entry.enabled) {
-      if (entry.timer !== 0) {
-        if (!autoMutated) {
-          autoBuyers = { ...autoBuyers };
-          autoMutated = true;
-        }
-        autoBuyers[id] = { ...entry, timer: 0 };
-      }
-      continue;
-    }
-
-    const def = GENERATORS.find(g => g.id === id);
-    if (!def) continue;
-
-    let timer = entry.timer + dt;
-    let workingEnergy = currentEnergy;
-    let workingGens = gens;
-    let localMutated = false;
-
-    while (timer >= entry.interval) {
-      const currentCount = workingGens[id]?.count ?? 0;
-      const cost = nextCost(def, currentCount);
-      if (workingEnergy >= cost) {
-        if (!localMutated) {
-          workingGens = { ...workingGens };
-          localMutated = true;
-        }
-        workingGens[id] = { count: currentCount + 1 };
-        workingEnergy -= cost;
-        timer -= entry.interval;
-      } else {
-        break;
-      }
-    }
-
-    if (localMutated) {
-      gens = workingGens;
-      gensMutated = true;
-      currentEnergy = workingEnergy;
-    }
-
-    if (timer !== entry.timer || localMutated) {
-      if (!autoMutated) {
-        autoBuyers = { ...autoBuyers };
-        autoMutated = true;
-      }
-      autoBuyers[id] = { ...entry, timer };
-    }
-  }
-
-  return {
-    energy: currentEnergy,
-    gens: gensMutated ? gens : state.gens,
-    autoBuyers: autoMutated ? autoBuyers : state.autoBuyers,
-  };
-};
-
-function reducer(state: State, action: Action): State {
+const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "TICK": {
-      const effects = summarizeEffects({ upgrades: state.upgrades, milestones: state.milestones });
-      const gain = rateOf(state, effects) * action.dt;
+      const effects = getEffectSummary(state.upgrades, state.milestones);
+      const gain = calculateRate(state, effects) * action.dt;
       const updated = processAutoBuyers(state, state.energy + gain, action.dt);
       return {
         ...state,
@@ -251,15 +71,14 @@ function reducer(state: State, action: Action): State {
       };
     }
     case "CLICK": {
-      const effects = summarizeEffects({ upgrades: state.upgrades, milestones: state.milestones });
-      const prestigeMult = 1 + (state.prestige + effects.prestigeBonus) * 0.1;
-      const add = CLICK_BASE_GAIN * effects.clickMultiplier * prestigeMult;
+      const effects = getEffectSummary(state.upgrades, state.milestones);
+      const prestigeMult = calculatePrestigeMultiplier(state, effects);
+      const add = calculateClickGain(effects, prestigeMult);
       return { ...state, energy: state.energy + add, totalEnergy: state.totalEnergy + add };
     }
     case "BUY": {
-      const def = GENERATORS.find(x => x.id === action.id);
-      if (!def) return state;
-      if (def.id === "click") return state;
+      const def = getGeneratorDef(action.id);
+      if (!def || def.id === "click") return state;
       const current = state.gens[def.id]?.count ?? 0;
       const amount = action.amount ?? 1;
       const limit = amount === "max" ? Number.POSITIVE_INFINITY : Math.max(1, Math.floor(amount));
@@ -269,7 +88,7 @@ function reducer(state: State, action: Action): State {
 
       while (purchased < limit) {
         if (amount === "max" && purchased >= 1_000_000) break;
-        const cost = nextCost(def, nextCount);
+        const cost = nextCost(def.id, nextCount);
         if (remainingEnergy < cost) break;
         remainingEnergy -= cost;
         nextCount += 1;
@@ -298,7 +117,7 @@ function reducer(state: State, action: Action): State {
       };
     }
     case "BUY_UPGRADE": {
-      const def = UPGRADES.find(x => x.id === action.id);
+      const def = UPGRADES.find((upgrade) => upgrade.id === action.id);
       if (!def) return state;
       if (state.upgrades[def.id]) return state;
       if ((def.unlockAt ?? 0) > state.totalEnergy) return state;
@@ -311,7 +130,7 @@ function reducer(state: State, action: Action): State {
       return applyUnlockEffects(next, def.effects);
     }
     case "CLAIM_MILESTONE": {
-      const def = MILESTONES.find(x => x.id === action.id);
+      const def = MILESTONES.find((milestone) => milestone.id === action.id);
       if (!def) return state;
       if (state.milestones[def.id]) return state;
       if (state.totalEnergy < def.threshold) return state;
@@ -323,8 +142,7 @@ function reducer(state: State, action: Action): State {
     }
     case "TOGGLE_AUTOBUYER": {
       const current = state.autoBuyers[action.id];
-      if (!current) return state;
-      if (current.enabled === action.enabled) return state;
+      if (!current || current.enabled === action.enabled) return state;
       return {
         ...state,
         autoBuyers: {
@@ -335,9 +153,10 @@ function reducer(state: State, action: Action): State {
     }
     case "LOAD":
       return ensureAutoBuyersForState(action.payload);
-    default: return state;
+    default:
+      return state;
   }
-}
+};
 
 type Ctx = {
   state: State;
@@ -364,17 +183,19 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const idleHandleRef = useRef<number | null>(null);
   const [offlineGain, setOfflineGain] = useState(0);
   const effects = useMemo(
-    () => summarizeEffects({ upgrades: state.upgrades, milestones: state.milestones }),
+    () => getEffectSummary(state.upgrades, state.milestones),
     [state.upgrades, state.milestones],
   );
-  const rate = useMemo(() => rateOf(state, effects), [state.gens, state.prestige, effects]);
-  const prestigeMult = useMemo(() => 1 + (state.prestige + effects.prestigeBonus) * 0.1, [state.prestige, effects]);
-  const clickGain = useMemo(() => CLICK_BASE_GAIN * effects.clickMultiplier * prestigeMult, [effects, prestigeMult]);
-  const costOf = useCallback((id: string) => {
-    const def = GENERATORS.find(g => g.id === id)!;
-    const cnt = state.gens[id]?.count ?? 0;
-    return nextCost(def, cnt);
-  }, [state.gens]);
+  const rate = useMemo(() => calculateRate(state, effects), [state.gens, state.prestige, effects]);
+  const prestigeMult = useMemo(() => calculatePrestigeMultiplier(state, effects), [state.prestige, effects]);
+  const clickGain = useMemo(() => calculateClickGain(effects, prestigeMult), [effects, prestigeMult]);
+  const costOf = useCallback(
+    (id: string) => {
+      const cnt = state.gens[id]?.count ?? 0;
+      return nextCost(id, cnt);
+    },
+    [state.gens],
+  );
   const canPrestige = state.totalEnergy >= PRESTIGE_REQ;
 
   stateRef.current = state;
@@ -452,7 +273,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     persist({ immediate: true });
   }, [state, persist]);
 
-  // load + offline progress
   useEffect(() => {
     const populate = async () => {
       const now = Date.now();
@@ -489,14 +309,14 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           const rawTs = typeof loaded.lastTs === "number" ? loaded.lastTs : Number.NaN;
           const nowSafe = Number.isFinite(now) ? now : Date.now();
-          const legacyThreshold = 10_000_000_000; // ~Sat Nov 20 2286 using ms, plenty above any perf.now values
+          const legacyThreshold = 10_000_000_000;
           const normalizedTs = Number.isFinite(rawTs) && rawTs > 0
             ? (rawTs < legacyThreshold ? nowSafe : rawTs)
             : nowSafe;
           const msGap = Math.max(0, nowSafe - normalizedTs);
           const dt = msGap / 1000;
-          const effectSnapshot = summarizeEffects({ upgrades: loaded.upgrades, milestones: loaded.milestones });
-          const tempRate = rateOf(loaded, effectSnapshot);
+          const effectSnapshot = getEffectSummary(loaded.upgrades, loaded.milestones);
+          const tempRate = calculateRate(loaded, effectSnapshot);
           const gain = tempRate * dt;
           loaded.energy += gain;
           loaded.totalEnergy += gain;
@@ -531,7 +351,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     void populate();
   }, []);
 
-  // save often
   useEffect(() => {
     const id = window.setInterval(() => persist(), 3000);
     const handleVisibility = () => {
@@ -553,7 +372,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [persist, flushPersist]);
 
-  // game loop
   useEffect(() => {
     let raf = 0;
     let last = performance.now();
@@ -561,7 +379,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const now = performance.now();
       const dt = (now - last) / 1000;
       last = now;
-      // cap dt in case of tab resume
       const capped = Math.min(dt, 0.25);
       baseDispatch({ type: "TICK", dt: capped });
       raf = requestAnimationFrame(loop);
