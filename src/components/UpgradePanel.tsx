@@ -17,7 +17,7 @@ export default function UpgradePanel() {
           ? "Purchased"
           : isUnlocked
             ? `Cost: ${format(upgrade.cost)}`
-            : `Unlocks at ${format(upgrade.unlockAt ?? 0)} total`;
+            : `Unlocks at ${format(upgrade.unlockAt ?? 0)} total insight`;
 
         const containerClasses = [
           "flex flex-col gap-3 rounded-2xl border bg-emerald-500/10 p-4 shadow-lg shadow-emerald-900/20 backdrop-blur card-glow",

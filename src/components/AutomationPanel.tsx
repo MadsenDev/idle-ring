@@ -58,7 +58,7 @@ export default function AutomationPanel() {
   const { state, dispatch } = useGame();
 
   if (autoDisplays.length === 0) {
-    return <div className="text-sm text-cyan-100/80">No automation blueprints yet.</div>;
+    return <div className="text-sm text-cyan-100/80">No automation theorems yet.</div>;
   }
 
   return (
@@ -81,14 +81,14 @@ export default function AutomationPanel() {
                   ? "Purchase upgrade to deploy"
                   : available
                     ? `Buy ${auto.source.name} (${format(auto.source.cost)})`
-                    : `Unlocks with ${auto.source.name} at ${format(auto.source.unlockAt ?? 0)} total`}
+                    : `Unlocks with ${auto.source.name} at ${format(auto.source.unlockAt ?? 0)} total insight`}
               </div>
             );
           } else {
             const progress = Math.min(state.totalEnergy / auto.source.threshold, 1);
             requirement = (
               <div className="text-[11px] uppercase tracking-[0.3em] text-cyan-100/60">
-                {`Reach ${format(auto.source.threshold)} total (${Math.floor(progress * 100)}%)`}
+                {`Reach ${format(auto.source.threshold)} total insight (${Math.floor(progress * 100)}%)`}
               </div>
             );
           }
