@@ -42,7 +42,7 @@ function HUD() {
       },
       {
         label: "Prestige Rank",
-        value: state.prestige,
+        value: format(state.prestige),
         hint: "ascension echoes",
         accent: "from-amber-500/50 via-pink-500/40 to-transparent",
         icon: FiAperture,

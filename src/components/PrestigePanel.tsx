@@ -37,7 +37,7 @@ export default function PrestigePanel() {
             />
           )}
         </motion.button>
-        <div className="text-xs uppercase tracking-[0.3em] text-amber-100/70">Current: {state.prestige}</div>
+        <div className="text-xs uppercase tracking-[0.3em] text-amber-100/70">Current: {format(state.prestige)}</div>
       </div>
     </motion.div>
   );
