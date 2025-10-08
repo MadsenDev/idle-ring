@@ -1,8 +1,12 @@
 import { motion } from "framer-motion";
 import GeneratorList from "./components/GeneratorList";
+import AutomationPanel from "./components/AutomationPanel";
+import MilestonesPanel from "./components/MilestonesPanel";
 import OfflineGainToast from "./components/OfflineGainToast";
 import PrestigePanel from "./components/PrestigePanel";
+import PrestigeUpgradePanel from "./components/PrestigeUpgradePanel";
 import Ring from "./components/Ring";
+import UpgradePanel from "./components/UpgradePanel";
 import { GameProvider, useGame } from "./game/GameProvider";
 import { format } from "./utils/format";
 
@@ -82,10 +86,61 @@ export default function App() {
           </motion.section>
 
           <motion.section
-            className="rounded-3xl border border-amber-500/30 bg-amber-500/10 p-5 shadow-2xl shadow-amber-900/20 backdrop-blur card-glow"
+            className="rounded-3xl border border-emerald-500/30 bg-emerald-500/10 p-5 shadow-2xl shadow-emerald-900/20 backdrop-blur card-glow"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: "easeOut", delay: 0.08 }}
+          >
+            <h2 className="font-semibold uppercase tracking-wider text-emerald-200">Upgrades</h2>
+            <div className="mt-4">
+              <UpgradePanel />
+            </div>
+          </motion.section>
+
+          <motion.section
+            className="rounded-3xl border border-fuchsia-500/30 bg-fuchsia-500/10 p-5 shadow-2xl shadow-fuchsia-900/20 backdrop-blur card-glow"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease: "easeOut", delay: 0.1 }}
+          >
+            <h2 className="font-semibold uppercase tracking-wider text-fuchsia-200">Milestones</h2>
+            <div className="mt-4">
+              <MilestonesPanel />
+            </div>
+          </motion.section>
+
+          <motion.section
+            className="rounded-3xl border border-cyan-500/30 bg-cyan-500/10 p-5 shadow-2xl shadow-cyan-900/20 backdrop-blur card-glow"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: "easeOut", delay: 0.12 }}
+          >
+            <h2 className="font-semibold uppercase tracking-wider text-cyan-200">Automation</h2>
+            <div className="mt-4">
+              <AutomationPanel />
+            </div>
+          </motion.section>
+
+          <motion.section
+            className="rounded-3xl border border-rose-500/30 bg-rose-500/10 p-5 shadow-2xl shadow-rose-900/20 backdrop-blur card-glow"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: "easeOut", delay: 0.13 }}
+          >
+            <h2 className="font-semibold uppercase tracking-wider text-rose-200">Prestige Upgrades</h2>
+            <p className="mt-1 text-xs uppercase tracking-[0.3em] text-rose-100/70">
+              Spend prestige for permanent boosts that persist through every reset.
+            </p>
+            <div className="mt-4">
+              <PrestigeUpgradePanel />
+            </div>
+          </motion.section>
+
+          <motion.section
+            className="rounded-3xl border border-amber-500/30 bg-amber-500/10 p-5 shadow-2xl shadow-amber-900/20 backdrop-blur card-glow"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: "easeOut", delay: 0.16 }}
           >
             <PrestigePanel />
           </motion.section>
