@@ -3,30 +3,45 @@
   --glow-secondary: rgba(236, 72, 153, 0.28);
 }
 
-.cosmic-grid::before {
-  content: "";
+.aurora-backdrop {
   position: absolute;
-  inset: -50%;
-  background-image: radial-gradient(rgba(129, 140, 248, 0.25) 1px, transparent 1px);
+  inset: -30% -20%;
+  background: radial-gradient(circle at 20% 20%, rgba(14, 116, 144, 0.35), transparent 60%),
+    radial-gradient(circle at 70% 30%, rgba(129, 140, 248, 0.28), transparent 55%),
+    radial-gradient(circle at 40% 70%, rgba(236, 72, 153, 0.25), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(56, 189, 248, 0.2), transparent 55%);
+  filter: blur(110px);
+  opacity: 0.9;
+  transform: translateZ(0);
+  pointer-events: none;
+}
+
+.starlight-mask {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
   background-size: 120px 120px;
-  opacity: 0.35;
-  animation: grid-spin 60s linear infinite;
+  mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.95), transparent 75%);
+  opacity: 0.6;
+  animation: drift 80s linear infinite;
+  pointer-events: none;
 }
 
-.cosmic-grid::after {
-  content: "";
-  position: absolute;
-  inset: -40%;
-  background: radial-gradient(circle at 20% 20%, rgba(236, 72, 153, 0.2), transparent 45%),
-    radial-gradient(circle at 80% 30%, rgba(59, 130, 246, 0.2), transparent 55%),
-    radial-gradient(circle at 50% 80%, rgba(56, 189, 248, 0.15), transparent 40%);
-  filter: blur(45px);
-  opacity: 0.65;
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  to {
+    transform: translate3d(-10%, -6%, 0) rotate(2deg) scale(1.05);
+  }
 }
 
-@keyframes grid-spin {
-  from { transform: rotate(0deg) scale(1); }
-  to { transform: rotate(360deg) scale(1.05); }
+.bg-grid-fade {
+  background-image: linear-gradient(rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(circle at top, rgba(0, 0, 0, 0.9), transparent 75%);
+  opacity: 0.6;
 }
 
 .card-glow {
@@ -49,7 +64,11 @@
 }
 
 @keyframes glow-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
