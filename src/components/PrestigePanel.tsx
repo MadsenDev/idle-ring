@@ -17,7 +17,7 @@ export default function PrestigePanel() {
       <div className="font-semibold mb-1 uppercase tracking-[0.35em] text-amber-200">Prestige</div>
       <div className="text-sm text-amber-100/90 mb-4">
         Reset everything to gain Prestige points (+10% insight production each).<br/>
-        Requires {format(PRESTIGE_REQ)} total insight. You’ll get: <b>{willGet}</b>
+        Requires {format(PRESTIGE_REQ)} total insight. You’ll get: <b>{format(willGet)}</b>
       </div>
       <div className="flex flex-wrap items-center gap-4">
         <motion.button
@@ -27,7 +27,7 @@ export default function PrestigePanel() {
           className={`group relative overflow-hidden rounded-xl px-4 py-2 text-sm font-semibold uppercase tracking-[0.3em] transition
             ${canPrestige ? "bg-amber-500 text-slate-900 shadow-lg shadow-amber-500/30 hover:bg-amber-400" : "bg-slate-700/60 text-slate-400 cursor-not-allowed"}`}
         >
-          <span className="relative z-10">Ascend (+{willGet})</span>
+          <span className="relative z-10">Ascend (+{format(willGet)})</span>
           {canPrestige && (
             <motion.span
               className="absolute inset-0 translate-y-full bg-gradient-to-r from-amber-400/70 via-rose-400/60 to-fuchsia-400/60"
