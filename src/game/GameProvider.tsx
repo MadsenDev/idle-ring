@@ -23,6 +23,8 @@ type EffectSummary = {
   prestigeBonus: number;
 };
 
+const MIN_AUTOSAVE_INTERVAL = 12_000;
+
 type State = {
   energy: number;
   totalEnergy: number;
@@ -391,10 +393,24 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [flushPersist]);
 
-  const persist = useCallback(() => {
+  const persist = useCallback((options: { immediate?: boolean } = {}) => {
+    const immediate = options.immediate ?? false;
     latestSnapshotRef.current = stateRef.current;
+
+    if (!immediate) {
+      const lastSave = saveRef.current;
+      if (lastSave !== 0 && Date.now() - lastSave < MIN_AUTOSAVE_INTERVAL) {
+        return;
+      }
+    }
+
+    if (typeof window === "undefined" || immediate) {
+      flushPersist();
+      return;
+    }
+
     schedulePersist();
-  }, [schedulePersist]);
+  }, [flushPersist, schedulePersist]);
 
   const dispatch = useCallback((action: Action) => {
     if (action.type !== "TICK") {
@@ -408,7 +424,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (!pendingImmediateSave.current) return;
     pendingImmediateSave.current = false;
-    persist();
+    persist({ immediate: true });
   }, [state, persist]);
 
   // load + offline progress
@@ -492,7 +508,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // save often
   useEffect(() => {
-    const id = window.setInterval(persist, 3000);
+    const id = window.setInterval(() => persist(), 3000);
     const handleVisibility = () => {
       if (document.visibilityState === "hidden") {
         flushPersist(true);
