@@ -83,7 +83,7 @@ type SaveOptions = {
 };
 
 export async function saveGameState(snapshot: unknown, options: SaveOptions = {}): Promise<void> {
-  const payload = JSON.stringify(snapshot);
+  const payload = typeof snapshot === "string" ? snapshot : JSON.stringify(snapshot);
   const hasIndexedDB = supportsIndexedDB();
   const shouldWriteLocal = options.forceLocal || !hasIndexedDB;
   let localWritten = false;
