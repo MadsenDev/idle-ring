@@ -6,7 +6,7 @@ import { format } from "../utils/format";
 type Burst = { id: number; x: number; y: number; value: number };
 
 export default function Ring() {
-  const { state, dispatch, rate } = useGame();
+  const { state, dispatch, rate, clickGain } = useGame();
   const controls = useAnimationControls();
   const [bursts, setBursts] = useState<Burst[]>([]);
   const idRef = useRef(0);
@@ -28,7 +28,7 @@ export default function Ring() {
     const angle = Math.random() * Math.PI * 2;
     const radius = 36 + Math.random() * 20;
     const id = idRef.current++;
-    const value = Number.isFinite(rate) && rate > 0 ? rate : 1;
+    const value = Number.isFinite(clickGain) && clickGain > 0 ? clickGain : 1;
     const burst: Burst = {
       id,
       x: Math.cos(angle) * radius,
@@ -50,6 +50,7 @@ export default function Ring() {
   };
 
   const formattedRate = useMemo(() => format(rate), [rate]);
+  const formattedClick = useMemo(() => format(clickGain), [clickGain]);
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -88,7 +89,7 @@ export default function Ring() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        +{formattedRate}/s • Tap for +1 (× prestige)
+        +{formattedRate}/s • Tap +{formattedClick}
       </motion.div>
     </div>
   );
